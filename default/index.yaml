@@ -1,0 +1,193 @@
+---
+general:
+  id: backupSet
+  name: Backup Set
+input: 
+  - name: dataTB
+    humanName: Data Set
+    default: 10
+  - name: changeRatePct
+    humanName: Change Rate in Percentage
+    default: 10
+  - name: reductionPct
+    humanName: Reduction in Percentage
+    default: 50
+  - name: fulls
+    humanName: Amount of Fulls
+    default: 10
+  - name: incs
+    humanName: Amount of Incs
+    default: 10
+output:
+  - name: fullBackupTB
+    humanName: Full Backup TB
+    formula: dataTB*(reductionPct/100)
+  - name: allfullDataTB
+    humanName: All Full Data
+    formula: fullBackupTB*fulls
+  - name: incBackupTB
+    humanName: Incremental Backup TB
+    formula: dataTB*(reductionPct/100)*(changeRatePct/100)
+  - name: allIncDataTB
+    humanName: All Incremental Data
+    formula: incBackupTB*incs
+  - name: total
+    humanName: All Backup TB
+    formula: allfullDataTB+allIncDataTB
+
+---
+general:
+  id: proxyCalc
+  name: Proxy Calc
+input:
+  - name: window
+    humanName: Window in hours
+    default: 8
+    type: decimal
+  - name: dataTB
+    humanName: Data Set
+    default: 10
+    type: decimal
+  - name: changeRatePct
+    humanName: Change Rate in Percentage
+    default: 10
+    type: decimal
+  - type: divider
+  - name: coreFullThroughput
+    humanName: Core Througput
+    default: 100
+    type: decimal
+  - name: coreIncrementalThroughput
+    humanName: Core Incremental Througput
+    default: 25
+    type: decimal
+  - name: coreMemUsage
+    humanName: Memory used per core GB
+    default: 2
+    type: decimal
+output:
+  - name: dataMegaBytes
+    humanName: Data In MegaBytes
+    type: decimal
+    formula: dataTB*1048576
+  - name: dataMegaBytesIncremental
+    humanName: Data In MegaBytes Incremental
+    type: number
+    formula: dataMegaBytes*(changeRatePct/100)
+  - name: windowInSeconds
+    humanName: Window In Seconds
+    type: number
+    formula: window*3600
+  - type: divider
+  - name: mbitpersec
+    humanName: Mbit/s
+    type: ceil
+    formula: dataMegaBytes/windowInSeconds
+  - name: coreFull
+    humanName: Core requirement for Full
+    type: ceil
+    formula: mbitpersec/coreFullThroughput
+  - name: memoryFull
+    humanName: Memory requirement for Full GB
+    type: ceil
+    formula: coreFull*coreMemUsage
+  - type: divider
+  - name: incrmbitpersec
+    humanName: Incremental Mbit/s
+    type: ceil
+    formula: dataMegaBytesIncremental/windowInSeconds
+  - name: coreIncrement
+    humanName: Core requirement for Increment
+    type: ceil
+    formula: incrmbitpersec/coreIncrementalThroughput
+  - name: memoryInc
+    humanName: Memory requirement for Increment GB
+    type: ceil
+    formula: coreIncrement*coreMemUsage
+---
+general:
+  id: bandwidthRequirements
+  name: Bandwidth Requirements
+input:
+  - name: window
+    humanName: Window in hours
+    default: 8
+    type: decimal
+  - name: dataTB
+    humanName: Data Set
+    default: 10
+    type: decimal
+output:
+  - name: dataMegaBytes
+    humanName: Data In MegaBytes
+    type: decimal
+    formula: dataTB*1048576
+  - name: dataMegaBits
+    humanName: Data In MegaBits
+    type: number
+    formula: dataMegaBytes*8
+  - name: windowInSeconds
+    humanName: Window In Seconds
+    type: number
+    formula: window*3600
+  - name: mbitpersec
+    humanName: Mbit/s
+    type: number
+    formula: dataMegaBits/windowInSeconds
+---
+general:
+  id: reverseBandwidth
+  name: Bandwidth Output
+input:
+  - name: window
+    humanName: Window in hours
+    default: 8
+    type: decimal
+  - name: mbitpersec
+    default: 100
+    humanName: Mbit/s
+    type: decimal
+
+output:
+  - name: windowInSeconds
+    humanName: Window In Seconds
+    type: number
+    formula: window*3600
+  - name: dataMegaBits
+    humanName: Data In MegaBits
+    type: number
+    formula: mbitpersec*windowInSeconds
+  - name: dataMegaBytes
+    humanName: Data In MegaBytes
+    type: decimal
+    formula: dataMegaBits/8
+  - name: dataTB
+    humanName: Data Set
+    type: round3
+    formula: dataMegaBytes/1048576
+---
+general:
+  id: tbtoany
+  name: TB to any
+input:
+  - name: dataTB
+    humanName: Data TB
+    type: number
+    default: 10
+    description : Data Set in TB
+output:
+  - name: dataGB
+    humanName: Data GB
+    type: number
+    description: Data Set in GB
+    formula: dataTB*1024
+  - name: dataMB
+    humanName: Data MB
+    type: number
+    description: Data Set in MB
+    formula: dataGB*1024
+  - name: data
+    humanName: Data in bytes
+    type: number
+    description: Data Set in bytes
+    formula: dataMB*1024
