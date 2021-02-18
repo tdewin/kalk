@@ -34,7 +34,6 @@ output:
   - name: total
     humanName: All Backup TB
     formula: allfullDataTB+allIncDataTB
-
 ---
 general:
   id: proxyCalc
@@ -165,6 +164,33 @@ output:
     humanName: Data Set
     type: round3
     formula: dataMegaBytes/1048576
+---
+general:
+  id: nas
+  name: NAS
+input:
+  - name: dataTB
+    humanName: Data TB
+    type: number
+    default: 10
+    description : Data Set in TB
+  - name: changeRate
+    humanName: Change Rate Percentage
+    default: 0.3
+  - name: retentiondays
+    humanName: Retention in Days
+    default: 365
+output:
+  - name: fullbackup
+    humanName: Full Backup
+    formula: dataTB
+  - name: incbackup
+    humanName: Inc Backup
+    formula: (dataTB*(changeRate/100)*retentiondays)
+  - name: storeData
+    humanName: Stored Data in TB
+    type: number
+    formula: fullbackup+incbackup
 ---
 general:
   id: tbtoany

@@ -103,7 +103,9 @@ func main() {
 			round3 = (floatnum) => roundFloat(floatnum,3)
 			round4 = (floatnum) => roundFloat(floatnum,4)
 
-			
+			function selectfunc(el) {
+				el.select();
+			}
 		</script>
 	  </head>
 	  <body>
@@ -276,7 +278,7 @@ func main() {
 			<div class="form-group row">
 			 <label for="%s" class="col-sm-2 col-form-label">%s</label>
 			 <div class="col-sm-10">
- 			 	<input type="text" class="form-control" id="%s" placeholder="0" value="0">
+ 			 	<input type="text" class="form-control" id="%s" placeholder="0" value="0" oncontextmenu="selectfunc(this);">
 				  %s
 			  </div>
 			</div>
